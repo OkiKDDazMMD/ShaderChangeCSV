@@ -1,0 +1,158 @@
+// DAZ Studio version 4.10.0.123 filetype DAZ Script
+// License: CC Attribution 3.0 Unported (https://creativecommons.org/licenses/by/3.0/)
+
+	var nMaxSelectedNodes = Scene.getNumSelectedNodes();
+
+	if(nMaxSelectedNodes!=1){
+		MessageBox.critical( qsTr("Selected Only One Nodes"), qsTr("Critical"), qsTr("&OK") );
+		return;
+	}
+
+	// Create a basic dialog
+	var oDlg = new DzBasicDialog();
+
+	// Get the wrapped widget for the dialog
+	var oDlgWgt = oDlg.getWidget();
+	
+	// Set the title of the dialog
+	oDlg.caption = "Shader Value";
+	
+	// Strip the space for a settings key
+	var sKey = oDlg.caption.replace( / /g, "" ) + "Dlg";
+	
+	// Set an [unique] object name on the wrapped dialog widget;
+	// this is used for recording position and size separately
+	// from all other [uniquely named] DzBasicDialog instances
+	oDlgWgt.objectName = sKey;
+
+	var oVGBDlg = new DzVGroupBox( oDlg );
+
+
+	var wTextBrowser = new DzTextEdit(oVGBDlg);
+	wTextBrowser.readOnly = true;
+	var oTextBrowser = wTextBrowser.getWidget();
+	wTextBrowser.objectName = String("%1LocalLView").arg( sKey );
+
+
+	var oNode = Scene.getSelectedNode(0);
+	var myTempObj = oNode.getObject();
+	if (myTempObj != null) {
+		var myTempShape = myTempObj.getCurrentShape();
+		var numIMat = myTempShape.getNumMaterials();
+		var sDefault = "Default";
+		var sBool = "On";
+		var sBoolDefault = "On";
+		var oColor, oColorDefault, oTexture;
+		var sFileName = "";
+		for( j = 0; j < numIMat; j++ ){
+			var myWorkMat = myTempShape.getMaterial( j );
+			var aPropertyList = myWorkMat.getPropertyList();
+			var sNameMat = myWorkMat.getLabel();
+			for( i = 0; i < aPropertyList.length; i++ ){
+
+				var sValue = String("%1,%2,%3").arg( sNameMat ).arg( aPropertyList[i].getPath() ).arg( aPropertyList[i].getLabel() );
+
+				if( aPropertyList[i].inherits("DzFloatProperty") ){
+					if( aPropertyList[i].getValue()!= aPropertyList[i].getDefaultValue() ){
+						sDefault = "";
+					}
+					else{
+						sDefault = "Default";
+					}
+
+					oTexture = aPropertyList[i].getMapValue();
+					if(oTexture!=null){
+						sFileName = oTexture.getFilename()
+					}
+					else{
+						sFileName = "";
+					}
+
+					wTextBrowser.append( sValue + String(",DzFloatProperty,%1,%2,%3,%4")
+												.arg( aPropertyList[i].getValue() )
+												.arg( aPropertyList[i].getDefaultValue() )
+												.arg( sDefault )
+												.arg( sFileName ) );
+				}
+				else if( aPropertyList[i].inherits("DzBoolProperty") ){
+					if( aPropertyList[i].getBoolValue()!= aPropertyList[i].getDefaultBoolValue() ){
+						sDefault = "";
+					}
+					else{
+						sDefault = "Default";
+					}
+
+					if( aPropertyList[i].getBoolValue() ){ sBool = "On"; }
+					else{ sBool = "Off"; }
+
+					if( aPropertyList[i].getDefaultBoolValue() ){ sBoolDefault = "On"; }
+					else{ sBoolDefault = "Off"; }
+
+					wTextBrowser.append( sValue + String(",DzBoolProperty,%1,%2,%3")
+												.arg( sBool )
+												.arg( sBoolDefault )
+												.arg( sDefault ) );
+				}
+				else if( aPropertyList[i].inherits("DzEnumProperty") ){
+					if( aPropertyList[i].getStringValue()!= aPropertyList[i].getDefaultStringValue() ){
+						sDefault = "";
+					}
+					else{
+						sDefault = "Default";
+					}
+
+					sValue = sValue + String(",DzEnumProperty,%1,%2,%3")
+									.arg( aPropertyList[i].getStringValue() )
+									.arg( aPropertyList[i].getDefaultStringValue() )
+									.arg( sDefault );
+
+					for(var loop = 0; loop < aPropertyList[i].getNumItems(); loop++){
+						sValue = sValue + String(",%1").arg( aPropertyList[i].getItem(loop) );
+					}
+
+					wTextBrowser.append( sValue );
+
+				}
+				else if( aPropertyList[i].inherits("DzColorProperty") ){
+
+					oTexture = aPropertyList[i].getMapValue();
+					if(oTexture!=null){
+						sFileName = oTexture.getFilename()
+					}
+					else{
+						sFileName = "";
+					}
+
+					oColor = aPropertyList[i].getColorValue();
+					oColorDefault = aPropertyList[i].getDefaultColorValue();
+
+					wTextBrowser.append( sValue + String(",DzColorProperty,%1,%2,%3,%4")
+												.arg( oColor.red )
+												.arg( oColor.green )
+												.arg( oColor.blue )
+												.arg( sFileName ) );
+				}
+				else{
+					wTextBrowser.append( sValue );
+				}
+			}
+		}
+
+	}
+
+	// Add the GroupBox to the dialog
+	oDlg.addWidget( oVGBDlg, 0, DzWidget.AlignCenter );
+
+	// Get the minimum size of the dialog
+	var sizeHint = oDlgWgt.minimumSizeHint;
+	
+	// Set the fixed size of the dialog
+//	oDlg.setFixedSize( sizeHint.width, sizeHint.height );
+	
+	// Set the text on the accept button
+	oDlg.setAcceptButtonText("Close");
+	// Hide the cancel button
+	oDlg.showCancelButton( false );
+
+	oDlg.exec();
+
