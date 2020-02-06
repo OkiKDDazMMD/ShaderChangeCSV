@@ -346,19 +346,21 @@
 		wTextBrowser.append( "" );
 	}
 
-	nAverage = nAverage / (aAllText.length);
-	nMeanSquare = nMeanSquare / (aAllText.length);
-	nMeanSquare = nMeanSquare - (nAverage * nAverage);
-	nMeanSquare = Math.sqrt(nMeanSquare);
+	if(aAllText.length>1){
+		nAverage = nAverage / (aAllText.length);
+		nMeanSquare = nMeanSquare / (aAllText.length);
+		nMeanSquare = nMeanSquare - (nAverage * nAverage);
+		nMeanSquare = Math.sqrt(nMeanSquare);
 
-	wTextBrowser.append( String("Max Time = %1 milliseconds").arg( nMaxTime ) );
-	wTextBrowser.append( "= " + dateTime( nMaxTime ) );
-	wTextBrowser.append( String("Min Time = %1 milliseconds").arg( nMinTime ) );
-	wTextBrowser.append( "= " + dateTime( nMinTime ) );
-	wTextBrowser.append( String("Average = %1 milliseconds").arg( nAverage ) );
-	wTextBrowser.append( "= " + dateTime( nAverage ) );
-	wTextBrowser.append( String("Deviation = %1 milliseconds").arg( nMeanSquare ) );
-	wTextBrowser.append( "= " + dateTime( nMeanSquare ) );
+		wTextBrowser.append( String("Max Time = %1 milliseconds").arg( nMaxTime ) );
+		wTextBrowser.append( "= " + dateTime( nMaxTime ) );
+		wTextBrowser.append( String("Min Time = %1 milliseconds").arg( nMinTime ) );
+		wTextBrowser.append( "= " + dateTime( nMinTime ) );
+		wTextBrowser.append( String("Average = %1 milliseconds").arg( nAverage ) );
+		wTextBrowser.append( "= " + dateTime( nAverage ) );
+		wTextBrowser.append( String("Deviation = %1 milliseconds").arg( nMeanSquare ) );
+		wTextBrowser.append( "= " + dateTime( nMeanSquare ) );
+	}
 
 	oDlg.exec();
 
