@@ -149,6 +149,7 @@
 	
 	// Set the title of the dialog
 	oDlg.caption = "Shader Value";
+	oDlg.caption = "Shader Change CSV";
 	
 	// Strip the space for a settings key
 	var sKey = oDlg.caption.replace( / /g, "" ) + "Dlg";
