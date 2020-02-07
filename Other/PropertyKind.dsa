@@ -15,7 +15,7 @@
 	var oDlgWgt = oDlg.getWidget();
 	
 	// Set the title of the dialog
-	oDlg.caption = "Shader Value";
+	oDlg.caption = "Property Kind";
 	
 	// Strip the space for a settings key
 	var sKey = oDlg.caption.replace( / /g, "" ) + "Dlg";
