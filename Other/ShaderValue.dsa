@@ -42,6 +42,7 @@
 		var sDefault = "Default";
 		var sBool = "On";
 		var sBoolDefault = "On";
+		var sHidden = "Visible"
 		var oColor, oColorDefault, oTexture;
 		var sFileName = "";
 		for( j = 0; j < numIMat; j++ ){
@@ -50,90 +51,102 @@
 			var sNameMat = myWorkMat.getLabel();
 			for( i = 0; i < aPropertyList.length; i++ ){
 
-				var sValue = String("%1,%2,%3").arg( sNameMat ).arg( aPropertyList[i].getPath() ).arg( aPropertyList[i].getLabel() );
+				var sProperty = aPropertyList[i].className();
+				sHidden = aPropertyList[i].isHidden() ? "Hidden" : "Visible";
 
-				if( aPropertyList[i].inherits("DzFloatProperty") ){
-					if( aPropertyList[i].getValue()!= aPropertyList[i].getDefaultValue() ){
-						sDefault = "";
-					}
-					else{
-						sDefault = "Default";
-					}
+				var sValue = String("%1,%2,%3,%4,%5").arg( sNameMat )
+											.arg( aPropertyList[i].getPath() )
+											.arg( aPropertyList[i].getLabel() )
+											.arg( sProperty ).arg( sHidden );
 
-					oTexture = aPropertyList[i].getMapValue();
-					if(oTexture!=null){
-						sFileName = oTexture.getFilename()
-					}
-					else{
-						sFileName = "";
-					}
+				switch( sProperty ){
+					case "DzIntProperty":
+					case "DzFloatProperty":
+						if( aPropertyList[i].getValue()!= aPropertyList[i].getDefaultValue() ){
+							sDefault = "";
+						}
+						else{
+							sDefault = "Default";
+						}
 
-					wTextBrowser.append( sValue + String(",DzFloatProperty,%1,%2,%3,%4")
-												.arg( aPropertyList[i].getValue() )
-												.arg( aPropertyList[i].getDefaultValue() )
-												.arg( sDefault )
-												.arg( sFileName ) );
-				}
-				else if( aPropertyList[i].inherits("DzBoolProperty") ){
-					if( aPropertyList[i].getBoolValue()!= aPropertyList[i].getDefaultBoolValue() ){
-						sDefault = "";
-					}
-					else{
-						sDefault = "Default";
-					}
+						oTexture = aPropertyList[i].getMapValue();
+						if(oTexture!=null){
+							sFileName = oTexture.getFilename()
+						}
+						else{
+							sFileName = "";
+						}
 
-					if( aPropertyList[i].getBoolValue() ){ sBool = "On"; }
-					else{ sBool = "Off"; }
+						wTextBrowser.append( sValue + String(",%1,%2,%3,%4")
+														.arg( aPropertyList[i].getValue() )
+														.arg( aPropertyList[i].getDefaultValue() )
+														.arg( sDefault )
+														.arg( sFileName ) );
+						break;
 
-					if( aPropertyList[i].getDefaultBoolValue() ){ sBoolDefault = "On"; }
-					else{ sBoolDefault = "Off"; }
+					case "DzBoolProperty":
+						if( aPropertyList[i].getBoolValue()!= aPropertyList[i].getDefaultBoolValue() ){
+							sDefault = "";
+						}
+						else{
+							sDefault = "Default";
+						}
 
-					wTextBrowser.append( sValue + String(",DzBoolProperty,%1,%2,%3")
-												.arg( sBool )
-												.arg( sBoolDefault )
-												.arg( sDefault ) );
-				}
-				else if( aPropertyList[i].inherits("DzEnumProperty") ){
-					if( aPropertyList[i].getStringValue()!= aPropertyList[i].getDefaultStringValue() ){
-						sDefault = "";
-					}
-					else{
-						sDefault = "Default";
-					}
+						sBool = aPropertyList[i].getBoolValue() ? "On" : "Off";
+						sBoolDefault = aPropertyList[i].getDefaultBoolValue() ? "On" : "Off";
 
-					sValue = sValue + String(",DzEnumProperty,%1,%2,%3")
-									.arg( aPropertyList[i].getStringValue() )
-									.arg( aPropertyList[i].getDefaultStringValue() )
-									.arg( sDefault );
+						wTextBrowser.append( sValue + String(",%1,%2,%3")
+														.arg( sBool )
+														.arg( sBoolDefault )
+														.arg( sDefault ) );
 
-					for(var loop = 0; loop < aPropertyList[i].getNumItems(); loop++){
-						sValue = sValue + String(",%1").arg( aPropertyList[i].getItem(loop) );
-					}
+						break;
 
-					wTextBrowser.append( sValue );
+					case "DzEnumProperty":
+						if( aPropertyList[i].getStringValue()!= aPropertyList[i].getDefaultStringValue() ){
+							sDefault = "";
+						}
+						else{
+							sDefault = "Default";
+						}
 
-				}
-				else if( aPropertyList[i].inherits("DzColorProperty") ){
+						sValue = sValue + String(",%1,%2,%3")
+											.arg( aPropertyList[i].getStringValue() )
+											.arg( aPropertyList[i].getDefaultStringValue() )
+											.arg( sDefault );
 
-					oTexture = aPropertyList[i].getMapValue();
-					if(oTexture!=null){
-						sFileName = oTexture.getFilename()
-					}
-					else{
-						sFileName = "";
-					}
+						for(var loop = 0; loop < aPropertyList[i].getNumItems(); loop++){
+							sValue = sValue + String(",%1").arg( aPropertyList[i].getItem(loop) );
+						}
 
-					oColor = aPropertyList[i].getColorValue();
-					oColorDefault = aPropertyList[i].getDefaultColorValue();
+						wTextBrowser.append( sValue );
 
-					wTextBrowser.append( sValue + String(",DzColorProperty,%1,%2,%3,%4")
-												.arg( oColor.red )
-												.arg( oColor.green )
-												.arg( oColor.blue )
-												.arg( sFileName ) );
-				}
-				else{
-					wTextBrowser.append( sValue );
+						break;
+
+					case "DzColorProperty":
+					case "DzFloatColorProperty":
+
+						oTexture = aPropertyList[i].getMapValue();
+						if(oTexture!=null){
+							sFileName = oTexture.getFilename()
+						}
+						else{
+							sFileName = "";
+						}
+
+						oColor = aPropertyList[i].getColorValue();
+						oColorDefault = aPropertyList[i].getDefaultColorValue();
+
+						wTextBrowser.append( sValue + String(",%1,%2,%3,%4")
+														.arg( oColor.red )
+														.arg( oColor.green )
+														.arg( oColor.blue )
+														.arg( sFileName ) );
+						break;
+
+					default:
+						wTextBrowser.append( sValue );
+						break;
 				}
 			}
 		}
