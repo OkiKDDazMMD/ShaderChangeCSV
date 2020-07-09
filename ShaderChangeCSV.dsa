@@ -27,8 +27,28 @@
 	var g_aTime = [];
 	var g_aImageName = [];
 
+	var bCancel = true;
+	var oDlg;
+	var g_wEditFileName;
+	var g_wCheckCancel;
+	var wTextBrowser;
+
+	createDialog();
+
+	if(s_bShiftPressed){
+		oDlg.exec();
+	}else{
+		materialsChange();
+	}
+
+
+
+/*********************************************************************/
+//
+/*********************************************************************/
+function createDialog(){
 	// Create a basic dialog
-	var oDlg = new DzBasicDialog();
+	oDlg = new DzBasicDialog();
 
 	// Get the wrapped widget for the dialog
 	var oDlgWgt = oDlg.getWidget();
@@ -48,18 +68,18 @@
 
 	var wHGBFile = new DzHGroupBox( oVGBDlg );
 	wHGBFile.title = "CSV File Name";
-	var g_wEditFileName = new DzLineEdit( wHGBFile );
+	g_wEditFileName = new DzLineEdit( wHGBFile );
 	g_wEditFileName.minWidth = 200;
 	g_wEditFileName.text = sFileCSV;
 	var wButtonFile = addButtonOnGroupBox( wHGBFile, "Select File", selectFile );
 
-	var g_wCheckCancel = new DzCheckBox( oVGBDlg );
+	g_wCheckCancel = new DzCheckBox( oVGBDlg );
 	g_wCheckCancel.text = "Cancel";
-	g_wCheckCancel.checked = true;
+	g_wCheckCancel.checked = bCancel;
 
 	var wButtonStart = addButtonOnGroupBox( oVGBDlg, "Start", materialsChange );
 
-	var wTextBrowser = new DzTextEdit(oVGBDlg);
+	wTextBrowser = new DzTextEdit(oVGBDlg);
 	wTextBrowser.readOnly = true;
 	var oTextBrowser = wTextBrowser.getWidget();
 	wTextBrowser.objectName = String("%1LocalLView").arg( sKey );
@@ -77,13 +97,7 @@
 	oDlg.setAcceptButtonText("Close");
 	// Hide the cancel button
 	oDlg.showCancelButton( false );
-
-	if(s_bShiftPressed){
-		oDlg.exec();
-	}else{
-		materialsChange();
-	}
-
+}
 
 
 /*********************************************************************/
@@ -114,7 +128,7 @@ function selectFile()
 {
 	var sFile = FileDialog.doFileDialog(true, "Select a CSV File", oFileNameScript.path(), "CSV Files (*.csv)" );
 	if( sFile ){
-		g_wEditFolder.text = sFile;
+		g_wEditFileName.text = sFile;
 	}
 }
 
@@ -188,11 +202,14 @@ function appendRenderingTime( nLength )
 /*********************************************************************/
 function materialsChange()
 {
+	sFileCSV = g_wEditFileName.text;
+	bCancel = g_wCheckCancel.checked;
+
 	if(s_bShiftPressed){
 		oDlg.close();
+		createDialog();
 	}
 
-	sFileCSV = g_wEditFileName.text;
 	var oFileCSV = new DzFile(sFileCSV);
 
 	if ( oFileCSV.open( oFileCSV.ReadOnly ) ) {
@@ -344,7 +361,7 @@ function materialsChange()
 			var bResult = oRenderMgr.doRender();
 			var oDateEnd = new Date();
 			g_aTime[nLine] = oDateEnd.getTime() - oDateStart.getTime();
-			if(!bResult && g_wCheckCancel.checked){
+			if(!bResult && bCancel){
 				var rMessageBox = MessageBox.question( qsTr("Do you want to continue?"), qsTr("Question"), qsTr("&Yes"), qsTr("&No") );
 				if( rMessageBox == 1 ){
 					wTextBrowser.append( "Cancel" );
@@ -366,4 +383,5 @@ function materialsChange()
 	wTextBrowser.append( "Complete" );
 	appendRenderingTime( aAllText.length );
 	oDlg.exec();
+
 }
