@@ -1,3 +1,4 @@
-red,Default,Base Color,250,0,0
-green,Default,Base Color,0,250,0
-blue,Default,Base Color,0,0,250
+RedGrossy,Default,Base Color,1.0,0,0,Glossy Layered Weight,1.0
+PlaneDefaultColorGrossy,Default,Base Color,1.0,1.0,1.0
+PlaneDefaultColor,Default,Glossy Layered Weight,0.325037
+Red,Default,Base Color,1.0,0,0
