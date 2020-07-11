@@ -302,7 +302,6 @@ function materialsChange()
 						break;
 
 					case "DzColorProperty":
-					case "DzFloatColorProperty":
 						if(aLineText[nCell+1].search(regxPair)>-1){
 							var nRed = parseFloat(aLineText[nCell+1]);
 						}
@@ -328,6 +327,59 @@ function materialsChange()
 						}
 						else{
 							wTextBrowser.append( String("Line=%1, Cell=%2, DzColorProperty Blue=%3 is not numeric")
+								.arg( nLine+1 ).arg( nCell+4 ).arg( aLineText[nCell+3] ) );
+							oDlg.exec();
+							return;
+						}
+
+						oProperty.setFloatColorValue( new DzFloatColor(nRed, nGreen, nBlue) );
+						nCell = nCell + 4;
+						break;
+
+					case "DzFloatColorProperty":
+						if(aLineText[nCell+1].search(regxPair)>-1){
+							var nRed = parseFloat(aLineText[nCell+1]);
+							if(nRed>1.0){
+								wTextBrowser.append( String("Line=%1, Cell=%2, DzFloatColorProperty Red=%3 is not Float")
+									.arg( nLine+1 ).arg( nCell+2 ).arg( aLineText[nCell+1] ) );
+								oDlg.exec();
+								return;
+							}
+						}
+						else{
+							wTextBrowser.append( String("Line=%1, Cell=%2, DzFloatColorProperty Red=%3 is not numeric")
+								.arg( nLine+1 ).arg( nCell+2 ).arg( aLineText[nCell+1] ) );
+							oDlg.exec();
+							return;
+						}
+
+						if(aLineText[nCell+2].search(regxPair)>-1){
+							var nGreen = parseFloat(aLineText[nCell+2]);
+							if(nGreen>1.0){
+								wTextBrowser.append( String("Line=%1, Cell=%2, DzFloatColorProperty Green=%3 is not Float")
+									.arg( nLine+1 ).arg( nCell+3 ).arg( aLineText[nCell+2] ) );
+								oDlg.exec();
+								return;
+							}
+						}
+						else{
+							wTextBrowser.append( String("Line=%1, Cell=%2, DzFloatColorProperty Green=%3 is not numeric")
+								.arg( nLine+1 ).arg( nCell+3 ).arg( aLineText[nCell+2] ) );
+							oDlg.exec();
+							return;
+						}
+
+						if(aLineText[nCell+3].search(regxPair)>-1){
+							var nBlue = parseFloat(aLineText[nCell+3]);
+							if(nBlue>1.0){
+								wTextBrowser.append( String("Line=%1, Cell=%2, DzFloatColorProperty Blue=%3 is not Float")
+									.arg( nLine+1 ).arg( nCell+4 ).arg( aLineText[nCell+3] ) );
+								oDlg.exec();
+								return;
+							}
+						}
+						else{
+							wTextBrowser.append( String("Line=%1, Cell=%2, DzFloatColorProperty Blue=%3 is not numeric")
 								.arg( nLine+1 ).arg( nCell+4 ).arg( aLineText[nCell+3] ) );
 							oDlg.exec();
 							return;
